@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Shopping Cart - E-commerce Store{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Shopping Cart</h1>
+
+<div id="cart-items">
+    <!-- Cart items will be loaded here -->
+</div>
+
+<template id="cart-template">
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="card-title product-name"></h5>
+                </div>
+                <div class="col-md-2">
+                    <div class="input-group">
+                        <input type="number" class="form-control quantity-input" min="1">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <p class="card-text price"></p>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-danger btn-sm remove-item">Remove</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<div class="row mt-4">
+    <div class="col-md-8">
+        <h3>Total: $<span id="cart-total">0.00</span></h3>
+    </div>
+    <div class="col-md-4">
+        <button class="btn btn-primary" id="checkout-btn">Proceed to Checkout</button>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadCart();
+
+    function loadCart() {
+        fetch('/cart/view')
+            .then(response => response.json())
+            .then(data => {
+                const cartItems = document.getElementById('cart-items');
+                cartItems.innerHTML = '';
+                
+                data.items.forEach(item => {
+                    const template = document.getElementById('cart-template');
+                    const clone = template.content.cloneNode(true);
+                    
+                    clone.querySelector('.product-name').textContent = item.product_name;
+                    clone.querySelector('.quantity-input').value = item.quantity;
+                    clone.querySelector('.price').textContent = `$${item.price.toFixed(2)}`;
+                    
+                    const quantityInput = clone.querySelector('.quantity-input');
+                    quantityInput.dataset.itemId = item.id;
+                    
+                    const removeBtn = clone.querySelector('.remove-item');
+                    removeBtn.dataset.itemId = item.id;
+                    
+                    cartItems.appendChild(clone);
+                });
+                
+                document.getElementById('cart-total').textContent = data.total.toFixed(2);
+            });
+    }
+
+    document.getElementById('cart-items').addEventListener('change', function(e) {
+        if (e.target.classList.contains('quantity-input')) {
+            const itemId = e.target.dataset.itemId;
+            const quantity = parseInt(e.target.value);
+            
+            fetch('/cart/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    item_id: itemId,
+                    quantity: quantity
+                })
+            })
+            .then(() => loadCart());
+        }
+    });
+
+    document.getElementById('cart-items').addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-item')) {
+            const itemId = e.target.dataset.itemId;
+            
+            fetch(`/cart/remove/${itemId}`, {
+                method: 'DELETE'
+            })
+            .then(() => loadCart());
+        }
+    });
+
+    document.getElementById('checkout-btn').addEventListener('click', function() {
+        // Implement checkout functionality
+        alert('Checkout functionality will be implemented soon!');
+    });
+});
+</script>
+{% endblock %} 

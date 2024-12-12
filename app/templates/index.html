@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Home - E-commerce Store{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-4">Welcome to Our Store</h1>
+    <p class="lead">Discover our amazing products at great prices!</p>
+    <hr class="my-4">
+    <p>Browse our latest collection and find what you need.</p>
+    <a class="btn btn-primary btn-lg" href="{{ url_for('main.products') }}" role="button">Shop Now</a>
+</div>
+
+<h2 class="mt-5 mb-4">Featured Products</h2>
+<div class="row">
+    {% for product in products %}
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            {% if product.image_url %}
+            <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.name }}">
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text">{{ product.description[:100] }}...</p>
+                <p class="card-text"><strong>${{ "%.2f"|format(product.price) }}</strong></p>
+                <a href="#" class="btn btn-primary">Add to Cart</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %} 

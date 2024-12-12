@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Order #{{ order.id }} - E-commerce Store{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3>Order #{{ order.id }}</h3>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p><strong>Order Date:</strong></p>
+                        <p>{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Status:</strong></p>
+                        {% if order.status == 'pending' %}
+                        <span class="badge bg-warning">Pending</span>
+                        {% elif order.status == 'completed' %}
+                        <span class="badge bg-success">Completed</span>
+                        {% else %}
+                        <span class="badge bg-danger">Cancelled</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <h4 class="mb-3">Order Items</h4>
+                {% for item in order.items %}
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h5>{{ item.product.name }}</h5>
+                        <p class="text-muted">Quantity: {{ item.quantity }}</p>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <p class="mb-0">Price: ${{ "%.2f"|format(item.price) }}</p>
+                        <p class="mb-0">Total: ${{ "%.2f"|format(item.price * item.quantity) }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+
+                <hr>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Total Amount</h5>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <h5>${{ "%.2f"|format(order.total_amount) }}</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h3>Shipping Information</h3>
+            </div>
+            <div class="card-body">
+                <p><strong>Shipping Address:</strong></p>
+                <p>{{ order.shipping_address }}</p>
+            </div>
+        </div>
+
+        {% if current_user.is_admin %}
+        <div class="card mt-4">
+            <div class="card-header">
+                <h3>Admin Actions</h3>
+            </div>
+            <div class="card-body">
+                <form id="status-form">
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Update Status</label>
+                        <select class="form-select" id="status" name="status">
+                            <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>Pending</option>
+                            <option value="completed" {% if order.status == 'completed' %}selected{% endif %}>Completed</option>
+                            <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update Status</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if current_user.is_admin %}
+<script>
+document.getElementById('status-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const status = document.getElementById('status').value;
+    
+    fetch(`/admin/order/${order.id}/update`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: status })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
+        } else {
+            alert(data.message);
+            location.reload();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while updating the order status');
+    });
+});
+</script>
+{% endif %}
+{% endblock %} 

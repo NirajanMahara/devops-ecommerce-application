@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - E-commerce Store{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Admin Dashboard</h1>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h5 class="card-title">Total Orders</h5>
+                <h2 class="card-text">{{ total_orders }}</h2>
+                <a href="{{ url_for('admin.orders') }}" class="text-white">View All Orders</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <h5 class="card-title">Pending Orders</h5>
+                <h2 class="card-text">{{ pending_orders }}</h2>
+                <a href="{{ url_for('admin.orders') }}" class="text-white">View Pending Orders</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5 class="card-title">Total Products</h5>
+                <h2 class="card-text">{{ total_products }}</h2>
+                <a href="{{ url_for('admin.products') }}" class="text-white">Manage Products</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h5 class="card-title">Total Users</h5>
+                <h2 class="card-text">{{ total_users }}</h2>
+                <a href="#" class="text-white">View Users</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    <a href="{{ url_for('admin.add_product') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-plus"></i> Add New Product
+                    </a>
+                    <a href="{{ url_for('admin.orders') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-clipboard-list"></i> View Recent Orders
+                    </a>
+                    <a href="{{ url_for('admin.products') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-box"></i> Manage Inventory
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">System Information</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Server Status:</strong> <span class="badge bg-success">Running</span></p>
+                <p><strong>Database Status:</strong> <span class="badge bg-success">Connected</span></p>
+                <p><strong>Last Backup:</strong> Not configured</p>
+                <p><strong>System Version:</strong> 1.0.0</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
