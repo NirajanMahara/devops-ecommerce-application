@@ -2,6 +2,9 @@
 
 A Flask-based e-commerce platform with automated CI/CD pipeline and AWS deployment.
 
+## Live Demo
+http://35.182.246.144
+
 ## Features
 
 - User Authentication and Authorization
@@ -32,19 +35,20 @@ A Flask-based e-commerce platform with automated CI/CD pipeline and AWS deployme
 
 ## Technical Stack
 
-- Backend: Flask
+- Backend: Flask 2.x
 - Database: SQLAlchemy with SQLite
 - Frontend: Bootstrap 5
 - Testing: pytest
 - CI/CD: GitHub Actions
 - Deployment: AWS EC2, Nginx, Gunicorn
+- OS: Amazon Linux 2
 
 ## Local Development Setup
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
-cd ecommerce-app
+git clone https://github.com/NirajanMahara/devops-ecommerce-application.git
+cd devops-ecommerce-application
 ```
 
 2. Create and activate virtual environment:
@@ -64,12 +68,7 @@ cp .env.example .env
 # Edit .env with your configurations
 ```
 
-5. Initialize the database:
-```bash
-flask db upgrade
-```
-
-6. Run the application:
+5. Run the application:
 ```bash
 python run.py
 ```
@@ -83,32 +82,27 @@ pytest
 
 ## AWS Deployment
 
-1. Install AWS CLI and configure credentials:
-```bash
-aws configure
-# Enter your AWS Access Key ID and Secret Access Key
-```
+The application is deployed on AWS EC2 with:
+- Amazon Linux 2
+- Python 3.9
+- Nginx as reverse proxy
+- Gunicorn as application server
 
-2. Run AWS setup script:
-```bash
-chmod +x deployment/aws_setup.sh
-./deployment/aws_setup.sh
-```
-
-3. Configure GitHub Secrets:
+### Required GitHub Secrets:
 - AWS_ACCESS_KEY_ID
 - AWS_SECRET_ACCESS_KEY
-- AWS_REGION
-- EC2_SSH_KEY (contents of ecommerce-key.pem)
-- EC2_HOST (EC2 instance public IP)
-- EC2_USER (ubuntu)
+- AWS_REGION (ca-central-1)
+- EC2_SSH_KEY
+- EC2_HOST
+- EC2_USER (ec2-user)
 
-4. Push to main branch to trigger deployment:
-```bash
-git add .
-git commit -m "Initial deployment"
-git push origin main
-```
+### Deployment Process
+1. Push to main branch
+2. GitHub Actions runs tests
+3. If tests pass, deploys to EC2
+4. Sets up Python environment
+5. Configures Nginx and Gunicorn
+6. Starts the application
 
 ## Project Structure
 
@@ -127,15 +121,8 @@ ecommerce-app/
 
 ## Default Admin Account
 
-- Email: admin@example.com
-- Password: admin123
-
-## CI/CD Pipeline
-
-The GitHub Actions workflow:
-1. Runs tests on every push and pull request
-2. Deploys to AWS EC2 on successful merge to main
-3. Automatically sets up the production environment
+- Email: admin@ecommerce.com
+- Password: Admin@123
 
 ## Monitoring and Maintenance
 
@@ -162,24 +149,12 @@ sudo systemctl status nginx
 - Role-based access control
 - Input validation and sanitization
 
-## Contributing
+## Authors
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests
-5. Submit a pull request
+Nirajan Mahara
+Santosh Khanal
+Kshitij Chaudhary
 
 ## License
 
-MIT License
-
-## Authors
-
-[Your Name] and contributors
-
-## Acknowledgments
-
-- Flask documentation
-- Bootstrap documentation
-- AWS documentation 
+MIT License 
