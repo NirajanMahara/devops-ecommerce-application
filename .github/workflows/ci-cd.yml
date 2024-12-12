@@ -53,12 +53,18 @@ jobs:
         echo "$PRIVATE_KEY" > private_key.pem
         chmod 600 private_key.pem
         
+        # Create directory and set permissions
+        ssh -i private_key.pem -o StrictHostKeyChecking=no ${USER}@${HOST} '
+          mkdir -p ~/ecommerce-app
+          chmod 755 ~/ecommerce-app
+        '
+        
         # Copy files to EC2
         scp -i private_key.pem -o StrictHostKeyChecking=no -r ./* ${USER}@${HOST}:~/ecommerce-app/
         
-        # Run deployment script
+        # Run deployment script with proper permissions
         ssh -i private_key.pem -o StrictHostKeyChecking=no ${USER}@${HOST} '
           cd ~/ecommerce-app &&
           chmod +x deployment/setup.sh &&
-          ./deployment/setup.sh
+          sudo ./deployment/setup.sh
         ' 
