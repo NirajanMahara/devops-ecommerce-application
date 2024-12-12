@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}E-commerce Store{% endblock %}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">E-commerce Store</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.index') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.products') }}">Products</a>
+                    </li>
+                    {% if current_user.is_authenticated and current_user.is_admin %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin.index') }}">Admin Dashboard</a>
+                    </li>
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav">
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('checkout.order_history') }}">My Orders</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link position-relative" href="{{ url_for('cart.view_cart') }}">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="cart-badge" id="cart-count">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category if category != 'message' else 'info' }} alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white mt-5 py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>About Us</h5>
+                    <p>Your trusted online shopping destination.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <h5>Contact</h5>
+                    <p>Email: support@example.com</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script>
+        // Update cart count
+        function updateCartCount() {
+            if (document.getElementById('cart-count')) {
+                fetch('/cart/view')
+                    .then(response => response.json())
+                    .then(data => {
+                        const count = data.items.length;
+                        document.getElementById('cart-count').textContent = count;
+                        document.getElementById('cart-count').style.display = count > 0 ? 'inline' : 'none';
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+        }
+
+        // Update cart count on page load if user is authenticated
+        {% if current_user.is_authenticated %}
+            document.addEventListener('DOMContentLoaded', updateCartCount);
+        {% endif %}
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html> 

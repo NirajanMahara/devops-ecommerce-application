@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Products - E-commerce Store{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Our Products</h1>
+
+<div class="row">
+    {% for product in products %}
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            {% if product.image_url %}
+            <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.name }}">
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text">{{ product.description[:100] }}...</p>
+                <p class="card-text">
+                    <strong>${{ "%.2f"|format(product.price) }}</strong>
+                    {% if product.stock > 0 %}
+                    <span class="badge bg-success">In Stock</span>
+                    {% else %}
+                    <span class="badge bg-danger">Out of Stock</span>
+                    {% endif %}
+                </p>
+                {% if current_user.is_authenticated and product.stock > 0 %}
+                <div class="d-flex align-items-center">
+                    <input type="number" class="form-control me-2" value="1" min="1" max="{{ product.stock }}" 
+                           style="width: 80px" id="quantity-{{ product.id }}">
+                    <button class="btn btn-primary add-to-cart" data-product-id="{{ product.id }}">
+                        Add to Cart
+                    </button>
+                </div>
+                {% elif not current_user.is_authenticated %}
+                <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Login to Purchase</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const addToCartButtons = document.querySelectorAll('.add-to-cart');
+    
+    addToCartButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.dataset.productId;
+            const quantity = document.getElementById(`quantity-${productId}`).value;
+            
+            fetch('/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    product_id: productId,
+                    quantity: parseInt(quantity)
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error adding item to cart');
+            });
+        });
+    });
+});
+</script>
+{% endblock %} 
