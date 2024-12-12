@@ -39,4 +39,5 @@ ENV/
 *.sqlite3
 
 # Logs
-*.log 
+*.log *.pem
+*.csv
